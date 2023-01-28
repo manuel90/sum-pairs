@@ -1,7 +1,5 @@
 # Sum Pairs
 
-## Running Sum Pairs
-
 Requirements:
 
 This code was build using javascript so, you will need a browser which supports it also, to run this code is necessary to have internet connection.
