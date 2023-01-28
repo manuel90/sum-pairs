@@ -1,0 +1,21 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"files.trimTrailingWhitespace": false,
+		"editor.insertSpaces": false,
+		"editor.tabSize": 2,
+		"files.insertFinalNewline": false,
+		"files.associations": {
+			"*.js": "javascriptreact"
+		},
+		"eslint.validate": [
+			"javascript",
+			"javascriptreact"
+		],
+		"java.configuration.updateBuildConfiguration": "automatic"
+  }
+}

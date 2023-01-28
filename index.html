@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sum Pairs Demo</title>
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+		<link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-2.19.4.css">
+		<style type="text/css">
+			#qunit-fixture, #qunit {
+				position: static !important;
+			}
+		</style>
+  </head>
+  <body>
+    
+		<div class="container">
+			<div class="mb-3 mt-5">
+				<label for="string_integers" class="form-label">List Integers</label>
+				<input type="text" class="form-control" id="string_integers" placeholder="1,9,5,0,20,-4,12,16,7" value="1,9,5,0,20,-4,12,16,7">
+			</div>
+			<div class="mb-3">
+				<label for="string_integers" class="form-label">Find:</label>
+				<input type="number" class="form-control" id="given" placeholder="12" value="12">
+			</div>
+			<button id="submit" class="btn btn-primary mb-3">Submit</button>
+			<pre id="render-result"></pre>
+			<hr/>
+			<h3>Unit Tests</h3>
+			<div id="qunit"></div>
+			<div id="qunit-fixture"></div>
+		</div>
+		
+		<script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+		<script src="https://code.jquery.com/qunit/qunit-2.19.4.js"></script>
+		<script type="text/javascript">
+			class SumError extends Error {}
+			jQuery(document).ready(function(){
+				/**
+				 * 
+				 * Visual logic
+				 * 
+				 * * * */
+				
+				var $btnSubmit = jQuery('#submit');
+				
+				var showResult = function(message) {
+					if(message instanceof Array) {
+						jQuery('#render-result').html(message.join('<br/>'));
+					} else {
+						jQuery('#render-result').html(message);
+					}
+				};
+				
+				$btnSubmit.on('click', function(){
+					try {
+						var listIntegers = jQuery('#string_integers').val().trim().split(',').map(function(number) {
+							if(!/^-?\d+$/.test(number)) {
+								throw new SumError("Invalid integer. "+number)
+							}
+							var newNumber = parseFloat(number);
+							if(newNumber > Number.MAX_SAFE_INTEGER || newNumber < Number.MIN_SAFE_INTEGER) {
+								throw new SumError("There's a number out of the range permitted.");
+							}
+							return newNumber;
+						});
+						
+						var given = parseFloat(jQuery('#given').val().trim());
+						
+						var result = getListPairs(listIntegers, given);
+						
+						if(result.length === 0) {
+							showResult('No results.');
+							return;
+						}
+						
+						showResult(result);
+						
+					} catch (error) {
+						if(error instanceof SumError) {
+							showResult(error.message);
+						} else {
+							showResult('Something went wrong.');
+						}
+					}
+					
+				});
+				
+				
+				/**
+				 * Logic function
+				 * Returns a list of pairs.
+				 * @param listIntegers Array<Integer>
+				 * @param given Integer
+				 * @return Array<String>
+				 * */
+				function getListPairs(listIntegers, given) {
+					var output = [];
+					for(var i = 0; i < listIntegers.length ; i++) {
+						for(var j = i+1; j < listIntegers.length ; j++) {
+							if((listIntegers[i] + listIntegers[j]) === given) {
+								output.push('+ '+listIntegers[i]+','+listIntegers[j]);
+							}
+						}
+					}
+					return output;
+				}
+								
+				/**
+				 * 
+				 * Unit test from here.
+				 * 
+				 * **************************/
+				
+				QUnit.module('add', function() {
+					
+					QUnit.test('small integers', function(assert) {
+						
+						assert.deepEqual(getListPairs([1,9,3,-7,11], 10), ['+ 1,9']);
+						
+						assert.deepEqual(getListPairs([1,9,5,0,20,-4,12,16,7], 12), ['+ 5,7', '+ 0,12', '+ -4,16']);
+					});
+					
+					QUnit.test('big numbers', function(assert) {
+						
+						assert.deepEqual(getListPairs([1654654,954154,300,-70,1044441], 15880), []);
+						
+						assert.deepEqual(getListPairs([100000000,1000000,5000000,-2000000,65000000], 104000000), []);
+						
+					});
+				});
+			});
+		</script>
+  </body>
+</html>
